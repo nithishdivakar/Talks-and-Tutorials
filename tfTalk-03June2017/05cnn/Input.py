@@ -13,7 +13,7 @@ class BatchImageInput():
     self.labels = tf.convert_to_tensor(labels, dtype=tf.int32)
   
   def read_one_file(self, filename_queue):
-    print filename_queue
+    # print filename_queue
     image_reader = tf.WholeFileReader()
     I  = tf.read_file(filename_queue[0])
     Id = tf.image.decode_image(I, channels=3)

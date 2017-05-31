@@ -30,7 +30,6 @@ with open('dataset/cifar/train/train.txt', 'r') as f:
 EI = BatchImageInput(image_paths, labels, batch_size = args.batch_size)
   
 x_,y_ = EI.get_minibatch_tensors()
-print "1"
 # x_ = tf.placeholder(dtype = tf.float32, shape = [None, 32*32])
 # y_ = tf.placeholder(dtype = tf.float32, shape = [None, 10])
 
@@ -40,18 +39,18 @@ y_logits_ , _= M.inference(x_)
 loss_ = Losses.cross_entropy(labels = y_, logits = y_logits_)
 train_op_ = optimizer.minimize(loss_)
 
-correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(y_logits_, 1))
+correct_prediction = tf.equal(y_, tf.cast(tf.argmax(y_logits_, 1),dtype=tf.int32))
 accuracy_ = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 saver = tf.train.Saver()
-print "2"
 
 with tf.Session() as sess:
   init = tf.global_variables_initializer()
+  coord = tf.train.Coordinator()
+  threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+ 
   sess.run(init)
-  print "3"
   for step in range(0, args.updates):
-    print step
     sess.run(
       [train_op_],
       #feed_dict = {
@@ -59,7 +58,6 @@ with tf.Session() as sess:
       #  y_ : batch_y,
       #}
     )
-    print "4"
     if step % args.log_interval == 0:
       loss,accuracy = sess.run(
                [loss_, accuracy_],
@@ -72,4 +70,5 @@ with tf.Session() as sess:
       sys.stdout.flush()
     if step % args.snapshot_interval == 0:
       saver.save(sess, "model.ckpt")
-               
+  coord.request_stop()
+  coord.join(threads)             
