@@ -1,10 +1,9 @@
 import os
 import glob
+import numpy
+numpy.random.seed(1234)
 import tensorflow as tf
-
-import random
-from tqdm import tqdm
-from itertools import product
+tf.set_random_seed(1234)
 
 class BatchImageInput():
   def __init__(self, image_paths,labels, batch_size = 32):
@@ -31,7 +30,7 @@ class BatchImageInput():
     
     Ic_batch, label_batch = tf.train.batch([Ic, label], batch_size=self.batch_size, capacity = 100)
     # (X,Y)
-    return Ic_batch/255.0, label_batch
+    return Ic_batch, label_batch
 
 
 def get_image_label_from_list(line_list,path_prefix=None):

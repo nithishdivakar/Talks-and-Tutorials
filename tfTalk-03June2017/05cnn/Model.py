@@ -1,4 +1,8 @@
+import numpy
+numpy.random.seed(1234)
 import tensorflow as tf
+tf.set_random_seed(1234)
+
 
 class Model(object):
   def __init__(self):
@@ -55,7 +59,7 @@ class Model(object):
     a4 = tf.nn.relu(z4)
     sh = a4.get_shape().as_list()
 
-    ff = tf.reshape(a4, [sh[0], sh[1]*sh[2]*sh[3]])
+    ff = tf.reshape(a4, [-1, numpy.prod(sh[1:])])
     
     z5 = dense(5,ff)
     a5 = tf.nn.relu(z5)
